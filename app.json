@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "QRCode",
+    "slug": "QRCode",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.trupermax.qrcode"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "./android-manifest.plugin.js"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "93cce22a-b1ab-48b4-bd38-096180f3d516"
+      }
+    }
+  }
+}
