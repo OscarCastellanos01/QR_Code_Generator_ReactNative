@@ -2,7 +2,7 @@
   "expo": {
     "name": "QRCode",
     "slug": "QRCode",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -25,13 +25,16 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.trupermax.qrcode"
+      "package": "com.trupermax.qrcode",
+      "versionCode": 10
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "./android-manifest.plugin.js"
+      "expo-media-library",
+      "./android-manifest.plugin.js",
+      "expo-camera"
     ],
     "extra": {
       "eas": {

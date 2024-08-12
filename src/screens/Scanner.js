@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
 import { StyleSheet, Text, View, Linking, Button, Alert, RefreshControl, ScrollView, Image} from 'react-native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { CameraView, Camera } from "expo-camera";
 import * as Clipboard from 'expo-clipboard';
 import * as Updates from "expo-updates";
 import { QRCode } from '../utils/constants';
@@ -27,7 +27,7 @@ export default function Scanner() {
 
   //Scanner
   const askForCameraPermissions = async () => {
-    const { status } = await BarCodeScanner.requestPermissionsAsync();
+    const { status } = await Camera.requestCameraPermissionsAsync();
     setHasPermission(status === 'granted');
   };
 
@@ -78,51 +78,48 @@ export default function Scanner() {
 
   return (
     <ScrollView
-        contentContainerStyle={styles.container}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
-        }
-      >
-      {!scanned ?
+      contentContainerStyle={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
+      {!scanned ? (
         <View style={styles.barcodebox}>
-          <BarCodeScanner
+          <CameraView
             onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
             style={StyleSheet.absoluteFillObject}
           />
         </View>
-      : 
+      ) : (
         <>
-          <Image 
-            style={styles.image}
-            source={{ uri: `${QRCode}${qr}` }}
-          />
+          <Image style={styles.image} source={{ uri: `${QRCode}${qr}` }} />
           <Text style={styles.maintext}>{text}</Text>
         </>
-      }
+      )}
 
-        {scanned && 
-          <>
-            <View style={styles.opciones}>
-              <View style={styles.btn1}>
-                <OpenURLButton url={text}>Abrir url</OpenURLButton>
-              </View>
-              <View style={styles.btn2}>
-                <Button title="Copiar" onPress={copyToClipboard} color= '#FF7D54'/>
-              </View>
+      {scanned && (
+        <>
+          <View style={styles.opciones}>
+            <View style={styles.btn1}>
+              <OpenURLButton url={text}>Abrir url</OpenURLButton>
             </View>
+            <View style={styles.btn2}>
+              <Button
+                title="Copiar"
+                onPress={copyToClipboard}
+                color="#FF7D54"
+              />
+            </View>
+          </View>
 
-            <Button 
-              title={'Volver a escanear'} 
-              onPress={() => setScanned(false)}
-              color= '#FF7D54'
-            />
-          </>
-        }
-
-      </ScrollView>
+          <Button
+            title={"Volver a escanear"}
+            onPress={() => setScanned(false)}
+            color="#FF7D54"
+          />
+        </>
+      )}
+    </ScrollView>
   );
 }
 

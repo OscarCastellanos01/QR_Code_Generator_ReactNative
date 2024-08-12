@@ -2,7 +2,6 @@ import React, {useState, useCallback} from 'react';
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert, RefreshControl, ScrollView } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
-import * as Permissions from 'expo-permissions';
 import { QRCode } from '../utils/constants';
 import * as Updates from "expo-updates";
 

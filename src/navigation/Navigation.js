@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, StatusBar, SafeAreaView, TouchableOpacity, Image } from 'react-native';
-//import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { Text, StyleSheet, StatusBar, TouchableOpacity, Image } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DrawerContentScrollView } from "@react-navigation/drawer";
 import Scanner from '../screens/Scanner';
