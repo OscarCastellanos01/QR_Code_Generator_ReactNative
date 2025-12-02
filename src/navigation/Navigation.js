@@ -2,6 +2,7 @@ import React from 'react';
 import { Text, StyleSheet, StatusBar, TouchableOpacity, Image } from 'react-native';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { DrawerContentScrollView } from "@react-navigation/drawer";
+import Constants from "expo-constants";
 import Scanner from '../screens/Scanner';
 import Generator from '../screens/Generator';
 
@@ -32,34 +33,30 @@ export default function Navigation(){
 
 const MenuItems = ({navigation}) => {
 	return (
-		<DrawerContentScrollView style={styles.container}>
-			<Text style = {styles.title}>Menú</Text>
+    <DrawerContentScrollView style={styles.container}>
+      <Text style={styles.title}>Menú</Text>
 
-			<TouchableOpacity
-				style={styles.button}
-				onPress = {() => navigation.navigate('Home')}
-			>
-				<Image
-					style={styles.icon} 
-					source= {require('../../assets/crear.png')} 
-				/>
-				<Text style={styles.textButton}>Crear</Text>
-			</TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate("Home")}
+      >
+        <Image style={styles.icon} source={require("../../assets/crear.png")} />
+        <Text style={styles.textButton}>Crear</Text>
+      </TouchableOpacity>
 
-			<TouchableOpacity
-				style={styles.button} 
-				onPress = {() => navigation.navigate('Scan')}
-			>
-				<Image
-					style={styles.icon} 
-					source= {require('../../assets/scan.png')} 
-				/>
-				<Text style={styles.textButton}>Escanear</Text>
-			</TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate("Scan")}
+      >
+        <Image style={styles.icon} source={require("../../assets/scan.png")} />
+        <Text style={styles.textButton}>Escanear</Text>
+      </TouchableOpacity>
 
-			<Text style = {{color: 'gray', textAlign: 'center'}}>V 1.0.0</Text>
-		</DrawerContentScrollView>
-	)
+      <Text style={{ color: "gray", textAlign: "center" }}>
+        V {Constants.expoConfig.version}
+      </Text>
+    </DrawerContentScrollView>
+  );
 }
 
 const styles = StyleSheet.create({

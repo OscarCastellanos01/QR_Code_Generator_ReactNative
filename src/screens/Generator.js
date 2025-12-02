@@ -1,9 +1,22 @@
 import React, {useState, useCallback} from 'react';
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Alert, RefreshControl, ScrollView } from 'react-native';
-import * as FileSystem from 'expo-file-system';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  RefreshControl,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
+import { Directory, File, Paths } from "expo-file-system";
 import * as MediaLibrary from 'expo-media-library';
 import { QRCode } from '../utils/constants';
 import * as Updates from "expo-updates";
+import * as Haptics from "expo-haptics";
+import { timestampFileName } from '../utils/fileNamteDate';
 
 //Refresh
   const wait = (timeout) => {
@@ -13,6 +26,7 @@ import * as Updates from "expo-updates";
 export default function App() {
   const [qr, setQr] = React.useState('TruperMax');
   const [refreshing, setRefreshing] = useState(false);
+  const [downloading, setDownloading] = useState(false);
   
   //Refresh
   const onRefresh = useCallback(() => {
@@ -23,17 +37,35 @@ export default function App() {
 
   const downloadFile = async () => {
     try {
-      let fielUri = FileSystem.documentDirectory + 'qrcode.png';
-      const {uri} = await FileSystem.downloadAsync(`${QRCode}${qr}`, fielUri);
+      const dir = new Directory(Paths.cache, "qrs");
 
-      saveFile(uri);
-    }catch (error) {
+      if (!dir.exists) {
+        dir.create();
+      }
+
+      const fileName = timestampFileName("qr", "png");
+
+      const destFile = new File(dir, fileName);
+
+      if (destFile.exists) {
+        destFile.delete();
+      }
+      
+      const downloaded = await File.downloadFileAsync(
+        `${QRCode}${qr}`,
+        destFile
+      );
+
+      // console.log(downloaded.uri);
+      saveFile(downloaded.uri);
+    } catch (error) {
       console.log(error);
     }
-  }
+  };
+  
   const alert = () =>
     Alert.alert(
-      "Finalizado...",
+      "Finalizado.",
       "Se guardo correctamente el Codigo QR.",
       [
         { text: "OK"}
@@ -49,112 +81,121 @@ export default function App() {
     alert();
   }
 
-  const handelDownload = () => {
-    downloadFile();
-  }
+  const handelDownload = async () => {
+    if (downloading) return;
+
+    try {
+      setDownloading(true);
+      await downloadFile();
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
-      <ScrollView
-        contentContainerStyle={styles.container}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
-        }
-      >
-        <View style={styles.qrCodeRow}>
-          <Text style={styles.titleOne}>QR Code</Text>
-          <Text style={styles.titleTwo}>Generator</Text>
-        </View>
+    <ScrollView
+      contentContainerStyle={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
+      <View style={styles.qrCodeRow}>
+        <Text style={styles.titleOne}>QR Code</Text>
+        <Text style={styles.titleTwo}>Generator</Text>
+      </View>
 
-        <TextInput
-          style = {styles.input}
-          placeholder = 'Ingrese algun texto/url'
-          placeholderTextColor="#969696"
-          onChange = {(e) => setQr(e.nativeEvent.text)}
-        />
+      <TextInput
+        style={styles.input}
+        placeholder="Ingrese algun texto/url"
+        placeholderTextColor="#969696"
+        onChange={(e) => setQr(e.nativeEvent.text)}
+      />
 
-        {qr && 
-          <>
-            <Image 
-              style={styles.image}
-              source={{ uri: `${QRCode}${qr}` }}
-            />
-            <TouchableOpacity 
-              style = {styles.button}
-              activeOpacity={0.7}
-              onPress={() => handelDownload()}
-            > 
+      {qr && (
+        <>
+          <Image style={styles.image} source={{ uri: `${QRCode}${qr}` }} />
+          <TouchableOpacity
+            style={[styles.button, downloading && styles.buttonDisabled]}
+            activeOpacity={0.7}
+            onPress={() => {Haptics.selectionAsync(); handelDownload()}}
+            disabled={downloading}
+          >
+            {downloading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
               <Text style={styles.text}>Descargar</Text>
-            </TouchableOpacity>
-          </>
-        }
-      </ScrollView>
+            )}
+          </TouchableOpacity>
+        </>
+      )}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: "#fff",
   },
-  qrCodeRow:{
+  qrCodeRow: {
     height: 45,
     flexDirection: "row",
     marginTop: 15,
     marginLeft: 54,
     marginRight: 54,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   titleOne: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 35,
-    color: 'rgb(55,55,55)',
+    color: "rgb(55,55,55)",
   },
   titleTwo: {
     color: "#FF7D54",
     fontSize: 35,
     marginLeft: 7,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   input: {
     marginTop: 40,
-    textAlign: 'center',
+    textAlign: "center",
     height: 50,
-    color: 'gray',
-    width: '80%',
+    color: "gray",
+    width: "80%",
     marginBottom: 25,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     paddingHorizontal: 20,
     borderRadius: 10,
     fontSize: 18,
     borderWidth: 1,
-    borderColor: '#1e3040',
-    alignSelf: 'center',
+    borderColor: "#1e3040",
+    alignSelf: "center",
   },
-  image:{
+  image: {
     width: 255,
     height: 255,
     marginTop: 10,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   button: {
     marginTop: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 4,
     elevation: 3,
-    backgroundColor: '#FF7D54',
-    alignSelf: 'center',
+    backgroundColor: "#FF7D54",
+    alignSelf: "center",
   },
   text: {
     fontSize: 16,
     lineHeight: 21,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     letterSpacing: 0.25,
-    color: 'white',
+    color: "white",
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
 });

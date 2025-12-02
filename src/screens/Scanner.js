@@ -1,8 +1,9 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import { StyleSheet, Text, View, Linking, Button, Alert, RefreshControl, ScrollView, Image} from 'react-native';
 import { CameraView, Camera } from "expo-camera";
 import * as Clipboard from 'expo-clipboard';
 import * as Updates from "expo-updates";
+import * as Haptics from "expo-haptics";
 import { QRCode } from '../utils/constants';
 
 //Refresh
@@ -15,7 +16,7 @@ export default function Scanner() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [text, setText] = useState('Not yet scanned');
-  const [qr, setQr] = React.useState('');
+  const [qr, setQr] = useState('');
   const [refreshing, setRefreshing] = useState(false);
 
   //Refresh
@@ -35,10 +36,11 @@ export default function Scanner() {
     askForCameraPermissions();
   }, []);
 
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarCodeScanned = async ({ type, data }) => {
     setScanned(true);
     setText(data);
     setQr(data);
+    await Haptics.selectionAsync();
     //console.log('Type: ' + type + '\nData: ' + data);
   };
 
@@ -86,7 +88,18 @@ export default function Scanner() {
       {!scanned ? (
         <View style={styles.barcodebox}>
           <CameraView
-            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+            onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+            barcodeScannerSettings={{
+              barcodeTypes: [
+                "qr",
+                "ean13",
+                "ean8",
+                "upc_a",
+                "upc_e",
+                "code39",
+                "code128",
+              ],
+            }}
             style={StyleSheet.absoluteFillObject}
           />
         </View>
@@ -106,7 +119,7 @@ export default function Scanner() {
             <View style={styles.btn2}>
               <Button
                 title="Copiar"
-                onPress={copyToClipboard}
+                onPress={() => {Haptics.selectionAsync(); copyToClipboard()}}
                 color="#FF7D54"
               />
             </View>
