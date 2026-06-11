@@ -52,7 +52,7 @@ export default function App() {
       }
       
       const downloaded = await File.downloadFileAsync(
-        `${QRCode}${qr}`,
+        `${QRCode}${encodeURIComponent(qr)}`,
         destFile
       );
 
@@ -113,7 +113,7 @@ export default function App() {
 
       {qr && (
         <>
-          <Image style={styles.image} source={{ uri: `${QRCode}${qr}` }} />
+          <Image style={styles.image} source={{ uri: `${QRCode}${encodeURIComponent(qr)}` }} />
           <TouchableOpacity
             style={[styles.button, downloading && styles.buttonDisabled]}
             activeOpacity={0.7}

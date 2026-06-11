@@ -105,7 +105,7 @@ export default function Scanner() {
         </View>
       ) : (
         <>
-          <Image style={styles.image} source={{ uri: `${QRCode}${qr}` }} />
+          <Image style={styles.image} source={{ uri: `${QRCode}${encodeURIComponent(qr)}` }} />
           <Text style={styles.maintext}>{text}</Text>
         </>
       )}
